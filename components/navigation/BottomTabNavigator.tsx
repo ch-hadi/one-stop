@@ -1,11 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Animated, TouchableWithoutFeedback, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import HomeScreen from '@/screens/Home/Home';
 import ProfileScreen from '@/screens/Profile/ProfileScreen';
 import CartScreen from '@/screens/Cart/CartScreen';
+import Setting from '@/screens/Settings/Settings';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,51 +15,73 @@ const BottomTabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: 'home' | 'home-outline' | 'person' | 'person-outline' | 'cart' | 'cart-outline' = 'home-outline';
+          let iconName: 'home' | 'home-outline' | 'search' | 'search-outline' | 'cart' | 'cart-outline' | 'settings' | 'settings-outline' = 'home-outline';
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
           } else if (route.name === 'Cart') {
             iconName = focused ? 'cart' : 'cart-outline';
-          }else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline';
-          } 
+          } else if (route.name === 'Search') {
+            iconName = focused ? 'search' : 'search-outline';
+          }
+          else if (route.name === 'Settings') {
+            iconName = focused ? 'settings' : 'settings-outline';
+          }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#ffff',
-        tabBarInactiveTintColor: 'white',
+        tabBarActiveTintColor: '#7e57c2',
+        tabBarInactiveTintColor: '#dfdfe1',
         tabBarStyle: {
-          backgroundColor: 'transparent',
-          paddingHorizontal: 20, // Padding on both sides
-          paddingBottom: 10,    // Padding inside the tab
-          position: 'absolute',
-          marginBottom: 15,     // Space from the bottom of the screen
+          // alignItems:'center',
+          // justifyContent:'center',
+          backgroundColor: '#ffff',
+          marginHorizontal: Platform.select({
+            ios: 10,
+            // android:10
+          }),
+          paddingBottom: Platform.select({
+            ios: 5,  // iOS-specific padding
+            android: 5,  // Android-specific padding
+          }),
+          marginBottom: Platform.select({
+            ios: 20,
+            android: 5
+          }),
           borderTopWidth: 0,
+          height: 60,
+          borderRadius: 10,
         },
-        tabBarBackground: () => (
-          <LinearGradient
-            colors={['#00416A','#E4E5E6']} // Gradient colors
-            start={[1, 1]}
-            end={[1, 1]}
-            style={{ flex: 1, marginHorizontal: 15, borderRadius: 10, paddingVertical:10 }}
-          />
-        ),
+        shadowColor: '#000',
+        shadowOpacity: 0.2,
+        shadowOffset: { width: 0, height: 4 }, // Shadow height
+        shadowRadius: 4,
+
+        // Shadow for Android
+        elevation: 5, // Creates shadow on Android
+        // tabBarItemStyle: {
+        //   justifyContent: 'center', // Center icons horizontally inside each tab item
+        //   alignItems: 'center',     // Center icons vertically
+        // },
+
         tabBarButton: (props) => <AnimatedTabButton {...props} />,
-        tabBarShowLabel:false
-        
+        tabBarShowLabel: false
+
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} options={{headerShown:false}}/>
-      <Tab.Screen name="Cart" component={CartScreen} options={{headerShown:false, tabBarStyle:{
-        display:'none'
-      }}}/>
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{headerShown:false}}/>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Search" component={ProfileScreen} options={{ headerShown: false }} />
+      <Tab.Screen name="Cart" component={CartScreen} options={{
+        headerShown: false, tabBarStyle: {
+          display: 'none'
+        }
+      }} />
+      <Tab.Screen name="Settings" component={Setting} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
 };
 
 // Custom animated button for the active/hover effect
-const AnimatedTabButton = (props:any) => {
+const AnimatedTabButton = (props: any) => {
   const focused = props.accessibilityState?.selected;
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
 
@@ -78,7 +101,7 @@ const AnimatedTabButton = (props:any) => {
 
   return (
     <TouchableWithoutFeedback onPress={props.onPress}>
-      <Animated.View style={{ transform: [{ scale: scaleAnim }],flex:1}}>
+      <Animated.View style={{ transform: [{ scale: scaleAnim }], flex: 1 }}>
         {props.children}
       </Animated.View>
     </TouchableWithoutFeedback>

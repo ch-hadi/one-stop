@@ -2,11 +2,11 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, Animated, TouchableWithoutFeedback, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import HomeScreen from '@/screens/Home/Home';
 import ProfileScreen from '@/screens/Profile/ProfileScreen';
 import CartScreen from '@/screens/Cart/CartScreen';
 import Setting from '@/screens/Settings/Settings';
+import BookingByCalendar from '@/screens/BookingAppointment/BookingAppointment';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,19 +15,19 @@ const BottomTabNavigator = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: 'home' | 'home-outline' | 'search' | 'search-outline' | 'cart' | 'cart-outline' | 'settings' | 'settings-outline' = 'home-outline';
+          let iconName: 'home' | 'home-outline' | 'search' | 'search-outline' | 'calendar-sharp' | 'calendar-outline' | 'settings' | 'settings-outline' = 'home-outline';
 
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Cart') {
-            iconName = focused ? 'cart' : 'cart-outline';
+          } else if (route.name === 'Appointments') {
+            iconName = focused ? 'calendar-sharp' : 'calendar-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'search' : 'search-outline';
           }
           else if (route.name === 'Settings') {
             iconName = focused ? 'settings' : 'settings-outline';
           }
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={20} color={color} style={{ marginBottom: -7 }} />;
         },
         tabBarActiveTintColor: '#7e57c2',
         tabBarInactiveTintColor: '#dfdfe1',
@@ -55,22 +55,16 @@ const BottomTabNavigator = () => {
         shadowOpacity: 0.2,
         shadowOffset: { width: 0, height: 4 }, // Shadow height
         shadowRadius: 4,
-
         // Shadow for Android
         elevation: 5, // Creates shadow on Android
-        // tabBarItemStyle: {
-        //   justifyContent: 'center', // Center icons horizontally inside each tab item
-        //   alignItems: 'center',     // Center icons vertically
-        // },
-
-        tabBarButton: (props) => <AnimatedTabButton {...props} />,
+        tabBarButton: (props) => <AnimatedTabButton {...props} name={route.name} />,
         tabBarShowLabel: false
 
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
       <Tab.Screen name="Search" component={ProfileScreen} options={{ headerShown: false }} />
-      <Tab.Screen name="Cart" component={CartScreen} options={{
+      <Tab.Screen name="Appointments" component={BookingByCalendar} options={{
         headerShown: false, tabBarStyle: {
           display: 'none'
         }
@@ -88,7 +82,7 @@ const AnimatedTabButton = (props: any) => {
   React.useEffect(() => {
     if (focused) {
       Animated.spring(scaleAnim, {
-        toValue: 1.2, // Slight increase in size when active
+        toValue: 1.1, // Slight increase in size when active
         useNativeDriver: true,
       }).start();
     } else {
@@ -101,8 +95,12 @@ const AnimatedTabButton = (props: any) => {
 
   return (
     <TouchableWithoutFeedback onPress={props.onPress}>
-      <Animated.View style={{ transform: [{ scale: scaleAnim }], flex: 1 }}>
+      
+      <Animated.View style={{ transform: [{ scale: scaleAnim }], flex: 1, alignItems:'center', marginBottom:5,padding:0 }}>
+        {/* {console.log(props)} */}
         {props.children}
+       <Text style={{color: props.accessibilityState?.selected ? '#7e57c2' : '#000d09',fontSize:12}}>{props.name}</Text>
+        
       </Animated.View>
     </TouchableWithoutFeedback>
   );
